@@ -8,13 +8,14 @@
  */
 
 import * as RN from 'react-native';
++import { Navigation } from "react-native-navigation";
 
 import * as RX from '../common/Interfaces';
 
 import { RootView, RootViewUsingProps } from './RootView';
 import UserInterface from './UserInterface';
 
-const _rnStateToRxState: {[key: string]: RX.Types.AppActivationState} = {
+const _rnStateToRxState: { [key: string]: RX.Types.AppActivationState } = {
     'unknown': RX.Types.AppActivationState.Active,
     'active': RX.Types.AppActivationState.Active,
     'background': RX.Types.AppActivationState.Background,
@@ -41,7 +42,23 @@ export class App extends RX.App {
     initialize(debug: boolean, development: boolean): void {
         super.initialize(debug, development);
         window.rxdebug = debug;
-        RN.AppRegistry.registerComponent('RXApp', this.getRootViewFactory());
+
+        Navigation.registerComponent('RXApp', this.getRootViewFactory());
+        Navigation.events().registerAppLaunchedListener(() => {
+            Navigation.setRoot({
+                root: {
+                    stack: {
+                        children: [
+                            {
+                                component: {
+                                    name: 'RXApp'
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
+        });
         UserInterface.registerRootViewUsingPropsFactory(this.getRootViewUsingPropsFactory());
     }
 
